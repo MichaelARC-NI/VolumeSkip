@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.VolumeSkip" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">#FFFFD700</item>
+        <item name="colorPrimaryDark">#FFFFAA00</item>
+        <item name="colorAccent">#FFFF4D6D</item>
+        <item name="android:colorBackground">#FF0D0208</item>
+        <item name="android:statusBarColor">#FF0D0208</item>
+        <item name="android:navigationBarColor">#FF0D0208</item>
+    </style>
+</resources>
