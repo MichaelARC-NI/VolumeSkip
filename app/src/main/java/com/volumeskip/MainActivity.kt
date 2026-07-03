@@ -77,6 +77,9 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnYouTube).setOnClickListener {
             openUrl("https://youtube.com/@androidmovil?si=dqzoWBDy1EsNaM7v")
         }
+        findViewById<Button>(R.id.btnTikTok).setOnClickListener {
+            openUrl("https://www.tiktok.com/@michaelarc1?_r=1&_t=ZS-97jdQNyYcuF")
+        }
     }
 
     override fun onResume() {
