@@ -2,8 +2,6 @@ package com.volumeskip
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
-import android.content.Intent
-import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
@@ -14,10 +12,6 @@ import android.view.accessibility.AccessibilityEvent
 /**
  * Accessibility Service que intercepta las teclas de volumen
  * a NIVEL DE SISTEMA, incluso con pantalla apagada.
- *
- * Requiere:
- * - android:canRequestFilterKeyEvents="true" en XML
- * - FLAG_REQUEST_FILTER_KEY_EVENTS en onServiceConnected()
  *
  * Funciona como los Motorola:
  * - Vol+ sostenido (400ms) → Siguiente canción
@@ -34,9 +28,7 @@ class VolumeKeyAccessibilityService : AccessibilityService() {
     }
 
     private val handler = Handler(Looper.getMainLooper())
-    private val audioManager: AudioManager? by lazy {
-        getSystemService(AUDIO_SERVICE) as? AudioManager
-    }
+    private val mediaHandler = MediaActionHandler(this)
 
     // Estado de cada tecla
     private var volDownTime = 0L
@@ -50,9 +42,9 @@ class VolumeKeyAccessibilityService : AccessibilityService() {
         if (volDownPending) {
             volDownConsumed = true
             volDownPending = false
-            Log.d(TAG, "← PRESIÓN LARGA Vol-: ANTERIOR")
-            dispatchMediaKey(KeyEvent.KEYCODE_MEDIA_PREVIOUS)
-            ToastCompat.show(this, "⏮ Anterior")
+            Log.d(TAG, "← PRESIÓN LARGA Vol-: RETROCEDER")
+            mediaHandler.previousTrack()
+            ToastCompat.show(this, "⏮ Retroceder")
         }
     }
 
@@ -60,9 +52,9 @@ class VolumeKeyAccessibilityService : AccessibilityService() {
         if (volUpPending) {
             volUpConsumed = true
             volUpPending = false
-            Log.d(TAG, "→ PRESIÓN LARGA Vol+: SIGUIENTE")
-            dispatchMediaKey(KeyEvent.KEYCODE_MEDIA_NEXT)
-            ToastCompat.show(this, "⏭ Siguiente")
+            Log.d(TAG, "→ PRESIÓN LARGA Vol+: ADELANTAR")
+            mediaHandler.nextTrack()
+            ToastCompat.show(this, "⏭ Adelantar")
         }
     }
 
@@ -95,8 +87,9 @@ class VolumeKeyAccessibilityService : AccessibilityService() {
     }
 
     /**
-     * Este método se llama para CADA TECLA presionada,
-     * incluyendo VOLUMEN, cuando FLAG_REQUEST_FILTER_KEY_EVENTS está activo.
+     * Recibe eventos de teclas a nivel sistema.
+     * Con canRequestFilterKeyEvents=true y FLAG_REQUEST_FILTER_KEY_EVENTS,
+     * esto incluye las teclas de volumen incluso con pantalla apagada.
      */
     override fun onKeyEvent(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
@@ -135,14 +128,13 @@ class VolumeKeyAccessibilityService : AccessibilityService() {
                     volDownPending = false
 
                     if (volDownConsumed) {
-                        // Long-press ya se ejecutó, consumimos el UP
                         volDownConsumed = false
                         Log.d(TAG, "← Vol- UP (long-press ya procesado)")
                         return true
                     }
 
                     if (elapsed < LONG_PRESS_MS) {
-                        // Presión corta: dejar pasar al sistema para volumen normal
+                        // Presión corta: dejar pasar al sistema
                         Log.d(TAG, "← Vol- presión corta ($elapsed ms) → volumen normal")
                         return false
                     }
@@ -169,14 +161,5 @@ class VolumeKeyAccessibilityService : AccessibilityService() {
             }
         }
         return false
-    }
-
-    private fun dispatchMediaKey(keyCode: Int) {
-        val am = audioManager ?: return
-        val now = SystemClock.uptimeMillis()
-        val down = KeyEvent(now, now, KeyEvent.ACTION_DOWN, keyCode, 0)
-        val up   = KeyEvent(now, now, KeyEvent.ACTION_UP, keyCode, 0)
-        am.dispatchMediaKeyEvent(down)
-        am.dispatchMediaKeyEvent(up)
     }
 }
