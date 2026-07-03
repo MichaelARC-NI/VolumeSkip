@@ -3,7 +3,6 @@ package com.volumeskip
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
-import android.content.SharedPreferences
 import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
@@ -15,35 +14,33 @@ import android.view.accessibility.AccessibilityEvent
 /**
  * Accessibility Service que intercepta las teclas de volumen.
  *
- * - Presión corta → Volumen normal (restaura el cambio de volumen)
- * - Presión larga (400ms) → Adelantar/Retroceder canción
+ * - Presión corta (< 400ms) → Volumen normal
+ * - Presión larga (≥ 400ms) → Adelantar/Retroceder canción
  *
- * Se puede desactivar desde la app (SharedPreferences "disabled").
+ * En pantalla de bloqueo, compensa inmediatamente cada auto-repetición
+ * de volumen que el sistema aplique antes de entregarnos el evento.
  */
 class VolumeKeyAccessibilityService : AccessibilityService() {
 
     companion object {
         private const val TAG = "VolumeSkip[Acc]"
         private const val LONG_PRESS_MS = 400L
-        private const val PREFS_NAME = "volume_skip_prefs"
-        private const val KEY_DISABLED = "accessibility_disabled"
         var isRunning = false
             private set
     }
 
     private val handler = Handler(Looper.getMainLooper())
     private var audioManager: AudioManager? = null
-    private var prefs: SharedPreferences? = null
 
-    // Estado de teclas
-    private var volDownTime = 0L
-    private var volUpTime = 0L
+    // Vol- state
+    private var volDownFirstTime = 0L
     private var volDownConsumed = false
-    private var volUpConsumed = false
     private var volDownPending = false
+
+    // Vol+ state
+    private var volUpFirstTime = 0L
+    private var volUpConsumed = false
     private var volUpPending = false
-    private var volDownKey = false
-    private var volUpKey = false
 
     private val volDownRunnable = Runnable {
         if (volDownPending) {
@@ -51,6 +48,8 @@ class VolumeKeyAccessibilityService : AccessibilityService() {
             volDownPending = false
             Log.d(TAG, "← Vol- LARGO: RETROCEDER")
             sendKey(KeyEvent.KEYCODE_MEDIA_PREVIOUS)
+            // Compensación extra por si alguna repetición se coló
+            compensateVolume(AudioManager.ADJUST_RAISE)
         }
     }
 
@@ -60,13 +59,14 @@ class VolumeKeyAccessibilityService : AccessibilityService() {
             volUpPending = false
             Log.d(TAG, "→ Vol+ LARGO: ADELANTAR")
             sendKey(KeyEvent.KEYCODE_MEDIA_NEXT)
+            // Compensación extra por si alguna repetición se coló
+            compensateVolume(AudioManager.ADJUST_LOWER)
         }
     }
 
     override fun onCreate() {
         super.onCreate()
         audioManager = getSystemService(Context.AUDIO_SERVICE) as? AudioManager
-        prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
     }
 
     override fun onServiceConnected() {
@@ -78,15 +78,12 @@ class VolumeKeyAccessibilityService : AccessibilityService() {
             isRunning = true
             Log.d(TAG, "✅ Accesibilidad activa")
         } catch (e: Exception) {
-            Log.e(TAG, "Error en onServiceConnected: ${e.message}")
+            Log.e(TAG, "Error: ${e.message}")
         }
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
-
-    override fun onInterrupt() {
-        Log.d(TAG, "Interrumpido")
-    }
+    override fun onInterrupt() {}
 
     override fun onDestroy() {
         isRunning = false
@@ -94,88 +91,63 @@ class VolumeKeyAccessibilityService : AccessibilityService() {
         super.onDestroy()
     }
 
-    /**
-     * Intercepta las teclas de volumen.
-     *
-     * En ACTION_DOWN: interceptamos para evitar el cambio de volumen normal.
-     * En ACTION_UP:
-     *   - Si fue presión corta: restauramos el volumen manualmente (1 paso)
-     *   - Si fue presión larga: ya se envió el comando de música
-     */
     override fun onKeyEvent(event: KeyEvent): Boolean {
-        // Si está desactivado en preferencias, dejar pasar todo
-        if (prefs?.getBoolean(KEY_DISABLED, false) == true) {
-            return false
-        }
-
         val keyCode = event.keyCode
         if (keyCode != KeyEvent.KEYCODE_VOLUME_UP && keyCode != KeyEvent.KEYCODE_VOLUME_DOWN) {
             return false
         }
 
-        when (event.action) {
-            KeyEvent.ACTION_DOWN -> {
+        val isDown = event.action == KeyEvent.ACTION_DOWN
+        val repeat = event.repeatCount
+
+        Log.d(TAG, "${if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) "Vol+" else "Vol-"} " +
+                "${if (isDown) "▼" else "▲"} (r=$repeat)")
+
+        if (isDown) {
+            if (repeat == 0) {
+                // Presión nueva — iniciar timer para detectar pulso largo
                 if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-                    volDownKey = true
                     handler.removeCallbacks(volDownRunnable)
-                    volDownTime = SystemClock.uptimeMillis()
+                    volDownFirstTime = SystemClock.uptimeMillis()
                     volDownConsumed = false
                     volDownPending = true
                     handler.postDelayed(volDownRunnable, LONG_PRESS_MS)
                 } else {
-                    volUpKey = true
                     handler.removeCallbacks(volUpRunnable)
-                    volUpTime = SystemClock.uptimeMillis()
+                    volUpFirstTime = SystemClock.uptimeMillis()
                     volUpConsumed = false
                     volUpPending = true
                     handler.postDelayed(volUpRunnable, LONG_PRESS_MS)
                 }
-                // Interceptamos para evitar que el sistema cambie el volumen
+            } else {
+                // Auto-repetición del sistema → ya cambió volumen, compensar al instante
+                val dir = if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)
+                    AudioManager.ADJUST_RAISE else AudioManager.ADJUST_LOWER
+                compensateVolume(dir)
+            }
+            return true
+        }
+
+        // ACTION_UP
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            handler.removeCallbacks(volDownRunnable)
+            volDownPending = false
+            if (volDownConsumed) {
+                volDownConsumed = false
                 return true
             }
-
-            KeyEvent.ACTION_UP -> {
-                if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-                    handler.removeCallbacks(volDownRunnable)
-                    val elapsed = SystemClock.uptimeMillis() - volDownTime
-                    volDownPending = false
-                    volDownKey = false
-
-                    if (volDownConsumed) {
-                        // Presión larga: ya enviamos comando de música
-                        volDownConsumed = false
-                        return true
-                    }
-
-                    if (elapsed < LONG_PRESS_MS) {
-                        // Presión corta: restaurar volumen manualmente
-                        adjustVolume(AudioManager.ADJUST_LOWER)
-                        return true
-                    }
-
-                    return true
-                } else {
-                    handler.removeCallbacks(volUpRunnable)
-                    val elapsed = SystemClock.uptimeMillis() - volUpTime
-                    volUpPending = false
-                    volUpKey = false
-
-                    if (volUpConsumed) {
-                        volUpConsumed = false
-                        return true
-                    }
-
-                    if (elapsed < LONG_PRESS_MS) {
-                        // Presión corta: restaurar volumen manualmente
-                        adjustVolume(AudioManager.ADJUST_RAISE)
-                        return true
-                    }
-
-                    return true
-                }
+            // Pulso corto → aplicar volumen
+            changeVolume(AudioManager.ADJUST_LOWER)
+        } else {
+            handler.removeCallbacks(volUpRunnable)
+            volUpPending = false
+            if (volUpConsumed) {
+                volUpConsumed = false
+                return true
             }
+            changeVolume(AudioManager.ADJUST_RAISE)
         }
-        return false
+        return true
     }
 
     private fun sendKey(keyCode: Int) {
@@ -185,15 +157,30 @@ class VolumeKeyAccessibilityService : AccessibilityService() {
             am.dispatchMediaKeyEvent(KeyEvent(now, now, KeyEvent.ACTION_DOWN, keyCode, 0))
             am.dispatchMediaKeyEvent(KeyEvent(now, now, KeyEvent.ACTION_UP, keyCode, 0))
         } catch (e: Exception) {
-            Log.e(TAG, "Error al enviar tecla $keyCode: ${e.message}")
+            Log.e(TAG, "Error sendKey: ${e.message}")
         }
     }
 
-    private fun adjustVolume(direction: Int) {
+    /** Compensa volumen sin sonido/UI (para contrarrestar cambios del sistema) */
+    private fun compensateVolume(direction: Int) {
         try {
-            audioManager?.adjustVolume(direction, AudioManager.FLAG_SHOW_UI)
+            audioManager?.adjustStreamVolume(
+                AudioManager.STREAM_MUSIC, direction, 0
+            )
         } catch (e: Exception) {
-            Log.e(TAG, "Error al ajustar volumen: ${e.message}")
+            Log.e(TAG, "Error compensate: ${e.message}")
+        }
+    }
+
+    /** Cambio de volumen normal con sonido e indicador visual */
+    private fun changeVolume(direction: Int) {
+        try {
+            audioManager?.adjustStreamVolume(
+                AudioManager.STREAM_MUSIC, direction,
+                AudioManager.FLAG_PLAY_SOUND or AudioManager.FLAG_SHOW_UI
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "Error volume: ${e.message}")
         }
     }
 }

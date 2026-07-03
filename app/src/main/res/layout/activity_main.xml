@@ -36,7 +36,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/titleText" />
 
-        <!-- Estado Servicio -->
+        <!-- Servicio -->
         <TextView
             android:id="@+id/statusText"
             android:layout_width="wrap_content"
@@ -66,7 +66,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/statusText" />
 
-        <!-- Estado Accesibilidad -->
+        <!-- Accesibilidad -->
         <TextView
             android:id="@+id/accessibilityStatus"
             android:layout_width="wrap_content"
@@ -96,68 +96,25 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/accessibilityStatus" />
 
-        <!-- Switch desactivar -->
-        <TextView
-            android:id="@+id/switchLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="🔄 Interruptor rápido"
-            android:textColor="#3a2a30"
-            android:textSize="11sp"
-            android:fontFamily="serif"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnAccessibility" />
-
-        <Switch
-            android:id="@+id/switchDisable"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="Desactivar VolumeSkip"
-            android:textColor="#a0848f"
-            android:textSize="13sp"
-            android:fontFamily="serif"
-            android:thumbTint="#ffd700"
-            android:trackTint="#2a1a20"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/switchLabel" />
-
-        <TextView
-            android:id="@+id/switchHint"
-            android:layout_width="0dp"
-            android:layout_marginHorizontal="30dp"
-            android:layout_height="wrap_content"
-            android:text="Al desactivar, las teclas de volumen vuelven a su función normal"
-            android:textColor="#3a2a30"
-            android:textSize="10sp"
-            android:fontFamily="serif"
-            android:gravity="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/switchDisable" />
-
         <!-- Instrucciones -->
         <View
             android:id="@+id/divider1"
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_marginHorizontal="35dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="16dp"
             android:background="#2a1a20"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/switchHint" />
+            app:layout_constraintTop_toBottomOf="@id/btnAccessibility" />
 
         <TextView
             android:id="@+id/instructionsText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="30dp"
-            android:layout_marginTop="10dp"
-            android:text="✦ PRESIÓN CORTA → Volumen\n✦ MANTENER VOL+ → Siguiente\n✦ MANTENER VOL- → Retroceder\n✦ Funciona en 2do plano y pantalla apagada"
+            android:layout_marginTop="12dp"
+            android:text="✦ PRESIÓN CORTA → Volumen normal\n✦ MANTENER VOL+ → Siguiente canción\n✦ MANTENER VOL- → Canción anterior\n✦ Funciona en segundo plano y pantalla apagada"
             android:textColor="#5a4a50"
             android:textSize="12sp"
             android:fontFamily="serif"
@@ -167,13 +124,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/divider1" />
 
-        <!-- Botones de prueba -->
+        <!-- Prueba -->
         <View
             android:id="@+id/divider2"
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_marginHorizontal="35dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="12dp"
             android:background="#2a1a20"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -184,7 +141,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="PRUEBA"
+            android:text="PRUEBA RÁPIDA"
             android:textColor="#3a2a30"
             android:textSize="10sp"
             android:fontFamily="serif"
@@ -253,7 +210,6 @@
             app:layout_constraintTop_toBottomOf="@id/divider3" />
 
         <TextView
-            android:id="@+id/socialSub"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="androidmovil@proton.me"
@@ -278,7 +234,7 @@
             android:background="#1877F2"
             app:layout_constraintEnd_toStartOf="@id/btnTelegram"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/socialSub" />
+            app:layout_constraintTop_toBottomOf="@+id/socialLabel" />
 
         <Button
             android:id="@+id/btnTelegram"
@@ -294,7 +250,7 @@
             android:background="#0088cc"
             app:layout_constraintEnd_toStartOf="@id/btnWhatsApp"
             app:layout_constraintStart_toEndOf="@id/btnFacebook"
-            app:layout_constraintTop_toBottomOf="@id/socialSub" />
+            app:layout_constraintTop_toBottomOf="@+id/socialLabel" />
 
         <Button
             android:id="@+id/btnWhatsApp"
@@ -310,7 +266,7 @@
             android:background="#25D366"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/btnTelegram"
-            app:layout_constraintTop_toBottomOf="@id/socialSub" />
+            app:layout_constraintTop_toBottomOf="@+id/socialLabel" />
 
         <Button
             android:id="@+id/btnYouTube"

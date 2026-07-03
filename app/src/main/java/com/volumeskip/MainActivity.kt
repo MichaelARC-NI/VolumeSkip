@@ -1,47 +1,32 @@
 package com.volumeskip
 
-import android.content.ComponentName
 import android.content.Intent
-import android.content.ServiceConnection
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
 import android.provider.Settings
 import android.view.KeyEvent
 import android.widget.Button
-import android.widget.CompoundButton
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.Switch
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationManagerCompat
 
 class MainActivity : AppCompatActivity() {
-
-    companion object {
-        private const val PREFS_NAME = "volume_skip_prefs"
-        private const val KEY_DISABLED = "accessibility_disabled"
-    }
 
     private lateinit var volumeSkipManager: VolumeSkipManager
     private var serviceBound = false
     private var serviceIntent: Intent? = null
-    private lateinit var prefs: SharedPreferences
 
     private lateinit var btnToggle: Button
     private lateinit var btnAccessibility: Button
     private lateinit var statusText: TextView
     private lateinit var accessibilityStatus: TextView
     private lateinit var instructionsText: TextView
-    private lateinit var switchDisable: Switch
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
         volumeSkipManager = VolumeSkipManager(this)
         serviceIntent = Intent(this, VolumeSkipService::class.java)
 
@@ -50,18 +35,6 @@ class MainActivity : AppCompatActivity() {
         statusText = findViewById(R.id.statusText)
         accessibilityStatus = findViewById(R.id.accessibilityStatus)
         instructionsText = findViewById(R.id.instructionsText)
-        switchDisable = findViewById(R.id.switchDisable)
-
-        // Estado del switch
-        switchDisable.isChecked = prefs.getBoolean(KEY_DISABLED, false)
-        switchDisable.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean(KEY_DISABLED, isChecked).apply()
-            if (isChecked) {
-                Toast.makeText(this, "⚪ VolumeSkip desactivado", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "🟢 VolumeSkip activado", Toast.LENGTH_SHORT).show()
-            }
-        }
 
         btnToggle.setOnClickListener {
             if (serviceBound) stopService()
@@ -83,16 +56,15 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnTestNext).setOnClickListener {
             val handler = MediaActionHandler(this)
             handler.nextTrack()
-            Toast.makeText(this, "⏭ Adelantar", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "⏭ Siguiente", Toast.LENGTH_SHORT).show()
         }
 
         findViewById<Button>(R.id.btnTestPrev).setOnClickListener {
             val handler = MediaActionHandler(this)
             handler.previousTrack()
-            Toast.makeText(this, "⏮ Retroceder", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "⏮ Anterior", Toast.LENGTH_SHORT).show()
         }
 
-        // Redes sociales
         findViewById<Button>(R.id.btnFacebook).setOnClickListener {
             openUrl("https://www.facebook.com/share/1D1pfVdbXE/")
         }
@@ -143,24 +115,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateUI() {
         val accEnabled = isAccessibilityServiceEnabled()
-        val disabled = prefs.getBoolean(KEY_DISABLED, false)
-
         if (accEnabled) {
-            accessibilityStatus.text = if (disabled) "● Accesibilidad: DESACTIVADA"
-                                       else "● Accesibilidad: ACTIVA"
-            accessibilityStatus.setTextColor(
-                if (disabled) 0xFFA0848F.toInt() else 0xFFFFD700.toInt())
-            btnAccessibility.text = if (disabled) "⚪ DESACTIVADA (ir a Ajustes)"
-                                    else "✅ Accesibilidad OK"
-            btnAccessibility.setBackgroundColor(
-                if (disabled) 0xFF5A4A50.toInt() else 0xFF4CAF50.toInt())
+            accessibilityStatus.text = "● Accesibilidad: ACTIVA"
+            accessibilityStatus.setTextColor(0xFFFFD700.toInt())
+            btnAccessibility.text = "✅ Accesibilidad OK"
+            btnAccessibility.setBackgroundColor(0xFF4CAF50.toInt())
         } else {
             accessibilityStatus.text = "○ Accesibilidad: INACTIVA"
             accessibilityStatus.setTextColor(0xFFA0848F.toInt())
             btnAccessibility.text = "⚙ ACTIVAR ACCESIBILIDAD"
             btnAccessibility.setBackgroundColor(0xFFFF4D6D.toInt())
         }
-
         if (serviceBound) {
             btnToggle.setTextColor(0xFFFFFFFF.toInt())
             btnToggle.setBackgroundColor(0xFFFF4D6D.toInt())
