@@ -1,164 +1,292 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0d0208">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <!-- Título -->
-    <TextView
-        android:id="@+id/titleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:text="VolumeSkip"
-        android:textColor="#ffd700"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        android:fontFamily="serif"
-        android:shadowColor="#ffd700"
-        android:shadowRadius="15"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <!-- Título -->
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="VolumeSkip"
+            android:textColor="#ffd700"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:fontFamily="serif"
+            android:shadowColor="#ffd700"
+            android:shadowRadius="15"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Subtítulo -->
-    <TextView
-        android:id="@+id/subtitleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Control musical al estilo Motorola"
-        android:textColor="#a0848f"
-        android:textSize="14sp"
-        android:fontFamily="serif"
-        android:letterSpacing="0.08"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/titleText" />
+        <TextView
+            android:id="@+id/subtitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Control musical al estilo Motorola"
+            android:textColor="#a0848f"
+            android:textSize="13sp"
+            android:fontFamily="serif"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/titleText" />
 
-    <!-- Estado -->
-    <TextView
-        android:id="@+id/statusText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="○  INACTIVO"
-        android:textColor="#a0848f"
-        android:textSize="20sp"
-        android:fontFamily="serif"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/subtitleText" />
+        <!-- Estado Servicio -->
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:text="○ Servicio: INACTIVO"
+            android:textColor="#a0848f"
+            android:textSize="16sp"
+            android:fontFamily="serif"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/subtitleText" />
 
-    <!-- Botón principal -->
-    <Button
-        android:id="@+id/btnToggle"
-        android:layout_width="260dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="30dp"
-        android:background="#ffd700"
-        android:text="▶  ACTIVAR"
-        android:textColor="#0d0208"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:fontFamily="serif"
-        android:shadowColor="#ffd700"
-        android:shadowRadius="5"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/statusText" />
+        <Button
+            android:id="@+id/btnToggle"
+            android:layout_width="260dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:background="#ffd700"
+            android:text="▶ ACTIVAR SERVICIO"
+            android:textColor="#0d0208"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:fontFamily="serif"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/statusText" />
 
-    <!-- Instrucciones -->
-    <TextView
-        android:id="@+id/instructionsText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="40dp"
-        android:layout_marginTop="30dp"
-        android:text="✦ Mantén VOL + para SIGUIENTE canción\n✦ Mantén VOL - para CANCIÓN ANTERIOR\n✦ Presión corta = volumen normal"
-        android:textColor="#5a4a50"
-        android:textSize="14sp"
-        android:fontFamily="serif"
-        android:lineSpacingExtra="6dp"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnToggle" />
+        <!-- Estado Accesibilidad -->
+        <TextView
+            android:id="@+id/accessibilityStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="○ Accesibilidad: INACTIVA"
+            android:textColor="#a0848f"
+            android:textSize="14sp"
+            android:fontFamily="serif"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnToggle" />
 
-    <!-- Línea divisoria -->
-    <View
-        android:id="@+id/divider"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginHorizontal="50dp"
-        android:layout_marginTop="25dp"
-        android:background="#2a1a20"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/instructionsText" />
+        <Button
+            android:id="@+id/btnAccessibility"
+            android:layout_width="260dp"
+            android:layout_height="46dp"
+            android:layout_marginTop="10dp"
+            android:background="#ff4d6d"
+            android:text="⚙ ACTIVAR ACCESIBILIDAD"
+            android:textColor="#ffffff"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:fontFamily="serif"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/accessibilityStatus" />
 
-    <!-- Botones de prueba -->
-    <TextView
-        android:id="@+id/testLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="PRUEBA RÁPIDA"
-        android:textColor="#3a2a30"
-        android:textSize="11sp"
-        android:letterSpacing="0.15"
-        android:fontFamily="serif"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider" />
+        <!-- Línea -->
+        <View
+            android:id="@+id/divider1"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="40dp"
+            android:layout_marginTop="20dp"
+            android:background="#2a1a20"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnAccessibility" />
 
-    <Button
-        android:id="@+id/btnTestPrev"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="12dp"
-        android:text="⏮ Anterior"
-        android:textColor="#0d0208"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:background="#a0848f"
-        app:layout_constraintEnd_toStartOf="@id/btnTestNext"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/testLabel" />
+        <!-- Instrucciones -->
+        <TextView
+            android:id="@+id/instructionsText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="35dp"
+            android:layout_marginTop="16dp"
+            android:text="✦ Mantén VOL + → SIGUIENTE\n✦ Mantén VOL - → ANTERIOR\n✦ Presión corta → Volumen normal\n✦ Funciona en segundo plano y pantalla apagada"
+            android:textColor="#5a4a50"
+            android:textSize="13sp"
+            android:fontFamily="serif"
+            android:lineSpacingExtra="5dp"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider1" />
 
-    <Button
-        android:id="@+id/btnTestNext"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginTop="12dp"
-        android:text="⏭ Siguiente"
-        android:textColor="#0d0208"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:background="#a0848f"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/btnTestPrev"
-        app:layout_constraintTop_toBottomOf="@id/testLabel" />
+        <!-- Botones de prueba -->
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="40dp"
+            android:layout_marginTop="16dp"
+            android:background="#2a1a20"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/instructionsText" />
 
-    <!-- Firma -->
-    <TextView
-        android:id="@+id/firmaText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:text="Michael Antonio Rodríguez Condega"
-        android:textColor="#1a1015"
-        android:textSize="11sp"
-        android:fontFamily="serif"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <TextView
+            android:id="@+id/testLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="PRUEBA"
+            android:textColor="#3a2a30"
+            android:textSize="11sp"
+            android:fontFamily="serif"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider2" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/btnTestPrev"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="35dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginTop="8dp"
+            android:text="⏮ Anterior"
+            android:textColor="#0d0208"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="#a0848f"
+            app:layout_constraintEnd_toStartOf="@id/btnTestNext"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/testLabel" />
+
+        <Button
+            android:id="@+id/btnTestNext"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="35dp"
+            android:layout_marginTop="8dp"
+            android:text="⏭ Siguiente"
+            android:textColor="#0d0208"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="#a0848f"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btnTestPrev"
+            app:layout_constraintTop_toBottomOf="@id/testLabel" />
+
+        <!-- Redes Sociales -->
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="40dp"
+            android:layout_marginTop="20dp"
+            android:background="#2a1a20"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnTestNext" />
+
+        <TextView
+            android:id="@+id/socialLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Michael Antonio Rodríguez Condega"
+            android:textColor="#ffd700"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:fontFamily="serif"
+            android:shadowColor="#ffd700"
+            android:shadowRadius="5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider3" />
+
+        <TextView
+            android:id="@+id/socialSub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Desarrollador · androidmovil@proton.me"
+            android:textColor="#5a4a50"
+            android:textSize="10sp"
+            android:fontFamily="serif"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/socialLabel" />
+
+        <Button
+            android:id="@+id/btnFacebook"
+            android:layout_width="0dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginTop="8dp"
+            android:text="f Facebook"
+            android:textColor="#ffffff"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="#1877F2"
+            app:layout_constraintEnd_toStartOf="@id/btnTelegram"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/socialSub" />
+
+        <Button
+            android:id="@+id/btnTelegram"
+            android:layout_width="0dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginTop="8dp"
+            android:text="✈ Telegram"
+            android:textColor="#ffffff"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="#0088cc"
+            app:layout_constraintEnd_toStartOf="@id/btnWhatsApp"
+            app:layout_constraintStart_toEndOf="@id/btnFacebook"
+            app:layout_constraintTop_toBottomOf="@id/socialSub" />
+
+        <Button
+            android:id="@+id/btnWhatsApp"
+            android:layout_width="0dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginTop="8dp"
+            android:text="💬 WhatsApp"
+            android:textColor="#ffffff"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="#25D366"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btnTelegram"
+            app:layout_constraintTop_toBottomOf="@id/socialSub" />
+
+        <Button
+            android:id="@+id/btnYouTube"
+            android:layout_width="0dp"
+            android:layout_height="42dp"
+            android:layout_marginHorizontal="80dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="24dp"
+            android:text="▶ YouTube"
+            android:textColor="#ffffff"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="#FF0000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnFacebook"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
