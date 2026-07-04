@@ -48,8 +48,6 @@ class VolumeKeyAccessibilityService : AccessibilityService() {
             volDownPending = false
             Log.d(TAG, "← Vol- LARGO: RETROCEDER")
             sendKey(KeyEvent.KEYCODE_MEDIA_PREVIOUS)
-            // Compensación extra por si alguna repetición se coló
-            compensateVolume(AudioManager.ADJUST_RAISE)
         }
     }
 
@@ -59,8 +57,6 @@ class VolumeKeyAccessibilityService : AccessibilityService() {
             volUpPending = false
             Log.d(TAG, "→ Vol+ LARGO: ADELANTAR")
             sendKey(KeyEvent.KEYCODE_MEDIA_NEXT)
-            // Compensación extra por si alguna repetición se coló
-            compensateVolume(AudioManager.ADJUST_LOWER)
         }
     }
 
@@ -119,11 +115,6 @@ class VolumeKeyAccessibilityService : AccessibilityService() {
                     volUpPending = true
                     handler.postDelayed(volUpRunnable, LONG_PRESS_MS)
                 }
-            } else {
-                // Auto-repetición del sistema → ya cambió volumen, compensar al instante
-                val dir = if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)
-                    AudioManager.ADJUST_RAISE else AudioManager.ADJUST_LOWER
-                compensateVolume(dir)
             }
             return true
         }
@@ -158,17 +149,6 @@ class VolumeKeyAccessibilityService : AccessibilityService() {
             am.dispatchMediaKeyEvent(KeyEvent(now, now, KeyEvent.ACTION_UP, keyCode, 0))
         } catch (e: Exception) {
             Log.e(TAG, "Error sendKey: ${e.message}")
-        }
-    }
-
-    /** Compensa volumen sin sonido/UI (para contrarrestar cambios del sistema) */
-    private fun compensateVolume(direction: Int) {
-        try {
-            audioManager?.adjustStreamVolume(
-                AudioManager.STREAM_MUSIC, direction, 0
-            )
-        } catch (e: Exception) {
-            Log.e(TAG, "Error compensate: ${e.message}")
         }
     }
 
